@@ -49,11 +49,11 @@ if not path.exists("Sample Data/images_time.mat"):
     print("Time Windom Images didn't exist need to be created.")
     create_img()
 
-Images = sio.loadmat("Sample Data/images_time.mat")["img"] #corresponding to the images mean for all the seven windows
-Mean_Images = np.mean(Images, axis= 0)
+Images = sio.loadmat("Sample Data/images_time.mat")["img"] #corresponding to the images mean for all the seven windows  (7,2670,3,32,32)
+Mean_Images = np.mean(Images, axis= 0)  # (2670,3,32,32) 对应每个window的平均值，一个window0.5s，7个window3.5s。感觉这个直接平均有点忽略了时间上的关联，如果在处理部分直接对3.5s处理成一整个图像，可能会更好一点 
 #Mean_Images = sio.loadmat("Sample Data/images.mat")["img"] #corresponding to the images mean for all the seven windows
-Label = (sio.loadmat("Sample Data/FeatureMat_timeWin")["features"][:,-1]-1).astype(int) #corresponding to the signal label (i.e. load levels).
-Patient_id = sio.loadmat("Sample Data/trials_subNums.mat")['subjectNum'][0] #corresponding to the patient id
+Label = (sio.loadmat("Sample Data/FeatureMat_timeWin")["features"][:,-1]-1).astype(int) #corresponding to the signal label (i.e. load levels).  # (2670,) 0, 1, 2, 3
+Patient_id = sio.loadmat("Sample Data/trials_subNums.mat")['subjectNum'][0] #corresponding to the patient id    # (2670,)  1,  2,  3,  4,  6,  7,  8,  9, 10, 11, 12, 14, 15
 
 # Introduction: training a simple CNN with the mean of the images.
 train_part = 0.8
@@ -62,7 +62,7 @@ test_part = 0.2
 batch_size = 32
 choosen_patient = 9
 n_epoch = 30
-n_rep = 20
+n_rep = 20  # 记录20次重复实验的结果
 
 for patient in np.unique(Patient_id):
 
@@ -92,7 +92,10 @@ for patient in np.unique(Patient_id):
 
     Result = []
     for r in range(n_rep):
-        EEG = EEGImagesDataset(label=Label[Patient_id == patient], image=Images[Patient_id == patient])
+        label = Label[Patient_id == patient]    # (185,)
+        image = Images[:, Patient_id == patient, :, :]  # (7,185,3,32,32)
+        image = np.transpose(image, (1, 0, 2, 3, 4))  # (185,7,3,32,32)
+        EEG = EEGImagesDataset(label=label, image=image)
         lengths = [int(len(EEG) * train_part + 1), int(len(EEG) * test_part)]
         if sum(lengths) < len(EEG):
             lengths[0] = lengths[0] + 1
@@ -119,7 +122,10 @@ for patient in np.unique(Patient_id):
 
     Result = []
     for r in range(n_rep):
-        EEG = EEGImagesDataset(label=Label[Patient_id == patient], image=Images[Patient_id == patient])
+        label = Label[Patient_id == patient]    # (185,)
+        image = Images[:, Patient_id == patient, :, :]  # (7,185,3,32,32)
+        image = np.transpose(image, (1, 0, 2, 3, 4))  # (185,7,3,32,32)
+        EEG = EEGImagesDataset(label=label, image=image)
         lengths = [int(len(EEG) * train_part + 1), int(len(EEG) * test_part)]
         if sum(lengths) < len(EEG):
             lengths[0] = lengths[0] + 1
@@ -147,7 +153,10 @@ for patient in np.unique(Patient_id):
 
     Result = []
     for r in range(n_rep):
-        EEG = EEGImagesDataset(label=Label[Patient_id == patient], image=Images[Patient_id == patient])
+        label = Label[Patient_id == patient]    # (185,)
+        image = Images[:, Patient_id == patient, :, :]  # (7,185,3,32,32)
+        image = np.transpose(image, (1, 0, 2, 3, 4))  # (185,7,3,32,32)
+        EEG = EEGImagesDataset(label=label, image=image)
         lengths = [int(len(EEG) * train_part + 1), int(len(EEG) * test_part)]
         if sum(lengths) < len(EEG):
             lengths[0] = lengths[0] + 1
@@ -175,7 +184,10 @@ for patient in np.unique(Patient_id):
 
     Result = []
     for r in range(n_rep):
-        EEG = EEGImagesDataset(label=Label[Patient_id == patient], image=Images[Patient_id == patient])
+        label = Label[Patient_id == patient]    # (185,)
+        image = Images[:, Patient_id == patient, :, :]  # (7,185,3,32,32)
+        image = np.transpose(image, (1, 0, 2, 3, 4))  # (185,7,3,32,32)
+        EEG = EEGImagesDataset(label=label, image=image)
         lengths = [int(len(EEG) * train_part + 1), int(len(EEG) * test_part)]
         if sum(lengths) < len(EEG):
             lengths[0] = lengths[0] + 1
