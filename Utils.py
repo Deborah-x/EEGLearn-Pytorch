@@ -48,8 +48,8 @@ class EEGImagesDataset(Dataset):
     """EEGLearn Images Dataset from EEG."""
     
     def __init__(self, label, image):
-        self.label = label
-        self.Images = image
+        self.label = label  # Mean_Images:(185,) 某一个id用户的数据条数
+        self.Images = image # Mean_Images:(185,3,32,32)
         
     def __len__(self):
         return len(self.label)
@@ -134,18 +134,18 @@ def TrainTest_Model(model, trainloader, testloader, n_epoch=30, opti='SGD', lear
 
 
 
-def create_img():
-    feats = sio.loadmat('Sample Data/FeatureMat_timeWin.mat')['features']
+def create_img():   # 从原始3D脑电图像到2D特征图像的转换，新图像大小为32*32
+    feats = sio.loadmat('Sample Data/FeatureMat_timeWin.mat')['features']   # (2670,1345)
     locs = sio.loadmat('Sample Data/Neuroscan_locs_orig.mat')
-    locs_3d = locs['A']
+    locs_3d = locs['A'] # (64,3)
     locs_2d = []
     # Convert to 2D
     for e in locs_3d:
         locs_2d.append(azim_proj(e))
 
     images_timewin = np.array([gen_images(np.array(locs_2d),
-                                          feats[:, i * 192:(i + 1) * 192], 32, normalize=True) for i in
-                               range(int(feats.shape[1] / 192))
+                                          feats[:, i * 192:(i + 1) * 192], 32, normalize=True) 
+                                          for i in range(int(feats.shape[1] / 192))
                                ])
 
     sio.savemat("Sample Data/images_time.mat",{"img":images_timewin})
