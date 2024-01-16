@@ -25,7 +25,6 @@ for model in models:
 fig = plt.figure()
 
 for i in range(len(models)):
-    a = 5
     plt.plot(np.max(Results[:,i,:],axis=1), '.-', label = models[i])
 
 # plt.legend()

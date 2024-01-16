@@ -32,6 +32,13 @@ import torch.optim as optim
 import torch.nn as nn
 import numpy as np
 
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+# from sklearn.metrics import confusion_matrix
+
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter("Logs/tensorboard")
+
 def kfold(length, n_fold):
     tot_id = np.arange(length)
     np.random.shuffle(tot_id)
@@ -109,8 +116,8 @@ def TrainTest_Model(model, trainloader, testloader, n_epoch=30, opti='SGD', lear
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(inputs.to(torch.float32).cuda())
-            _, predicted = torch.max(outputs.cpu().data, 1)
+            outputs = net(inputs.to(torch.float32).cuda())  # (batch_size, 4)
+            _, predicted = torch.max(outputs.cpu().data, 1) # 取出4个类别中最大概率对应的索引
             evaluation.append((predicted==labels).tolist())
             loss = criterion(outputs, labels.cuda())
             loss.backward()
@@ -122,6 +129,8 @@ def TrainTest_Model(model, trainloader, testloader, n_epoch=30, opti='SGD', lear
         evaluation = [item for sublist in evaluation for item in sublist]
         running_acc = sum(evaluation)/len(evaluation)
         validation_loss, validation_acc = Test_Model(net, testloader, criterion,True)
+
+        writer.add_scalar(f"{net.__class__.__name__} validation loss", validation_loss, epoch)
         
         if epoch%print_epoch==(print_epoch-1):
             print('[%d, %3d]\tloss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
@@ -129,6 +138,17 @@ def TrainTest_Model(model, trainloader, testloader, n_epoch=30, opti='SGD', lear
     if verbose:
         print('Finished Training \n loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
                  (running_loss, running_acc, validation_loss,validation_acc))
+        
+    # # 计算混淆矩阵
+    # cm =  confusion_matrix(labels, predicted)
+    # # 可视化混淆矩阵
+    # sns.heatmap(cm, annot=True, cmap="Blues", fmt="d", cbar=False,
+    #             xticklabels=['0','1','2','3'], yticklabels=['0','1','2','3'])
+    # plt.xlabel('Predicted Label')
+    # plt.ylabel('True Label')
+    # plt.title('Confusion Matrix')
+    # # 保存混淆矩阵为图片文件
+    # plt.savefig('ConfusionMatrix.png', dpi=400)
     
     return (running_loss, running_acc, validation_loss,validation_acc)
 

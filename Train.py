@@ -35,6 +35,10 @@ from torch.autograd import Variable
 from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader,random_split
 
+
+import logging
+logging.basicConfig(filename='Logs/output.log', level=logging.INFO, format='%(asctime)s %(message)s')
+
 from Utils import *
 from Models import *
 
@@ -46,7 +50,7 @@ warnings.simplefilter("ignore")
 
 
 if not path.exists("Sample Data/images_time.mat"):
-    print("Time Windom Images didn't exist need to be created.")
+    logging.info("Time Windom Images didn't exist need to be created.")
     create_img()
 
 Images = sio.loadmat("Sample Data/images_time.mat")["img"] #corresponding to the images mean for all the seven windows  (7,2670,3,32,32)
@@ -80,13 +84,13 @@ for patient in np.unique(Patient_id):
         Result.append(res)
     sio.savemat("Res_Basic_Patient"+str(patient)+".mat", {"res":Result})
     Result = np.mean(Result, axis=0)
-    print ('-'*100)
-    print('\nBegin Training for Patient '+str(patient))
-    print('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
+    logging.info('-'*100)
+    logging.info('\nBegin Training for Patient '+str(patient))
+    logging.info('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
           (Result[0], Result[1], Result[2], Result[3]))
-    print('\n'+'-'*100)
+    logging.info('\n'+'-'*100)
 
-print("\n\n\n\n Maxpool CNN \n\n\n\n")
+logging.info("\n\n\n\n Maxpool CNN \n\n\n\n")
 
 for patient in np.unique(Patient_id):
 
@@ -109,13 +113,13 @@ for patient in np.unique(Patient_id):
         Result.append(res)
     sio.savemat("Res_MaxCNN_Patient"+str(patient)+".mat", {"res":Result})
     Result = np.mean(Result, axis=0)
-    print ('-'*100)
-    print('\nBegin Training for Patient '+str(patient))
-    print('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
+    logging.info('-'*100)
+    logging.info('\nBegin Training for Patient '+str(patient))
+    logging.info('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
           (Result[0], Result[1], Result[2], Result[3]))
-    print('\n'+'-'*100)
+    logging.info('\n'+'-'*100)
 
-print("\n\n\n\n Temp CNN \n\n\n\n")
+logging.info("\n\n\n\n Temp CNN \n\n\n\n")
 
 
 for patient in np.unique(Patient_id):
@@ -139,14 +143,14 @@ for patient in np.unique(Patient_id):
         Result.append(res)
     sio.savemat("Res_TempCNN_Patient"+str(patient)+".mat", {"res":Result})
     Result = np.mean(Result, axis=0)
-    print ('-'*100)
-    print('\nBegin Training for Patient '+str(patient))
-    print('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
+    logging.info('-'*100)
+    logging.info('\nBegin Training for Patient '+str(patient))
+    logging.info('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
           (Result[0], Result[1], Result[2], Result[3]))
-    print('\n'+'-'*100)
+    logging.info('\n'+'-'*100)
 
 
-print("\n\n\n\n LSTM CNN \n\n\n\n")
+logging.info("\n\n\n\n LSTM CNN \n\n\n\n")
 
 
 for patient in np.unique(Patient_id):
@@ -170,14 +174,14 @@ for patient in np.unique(Patient_id):
         Result.append(res)
     sio.savemat("Res_LSTM_Patient"+str(patient)+".mat", {"res":Result})
     Result = np.mean(Result, axis=0)
-    print ('-'*100)
-    print('\nBegin Training for Patient '+str(patient))
-    print('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
+    logging.info('-'*100)
+    logging.info('\nBegin Training for Patient '+str(patient))
+    logging.info('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
           (Result[0], Result[1], Result[2], Result[3]))
-    print('\n'+'-'*100)
+    logging.info('\n'+'-'*100)
 
 
-print("\n\n\n\n Mix CNN \n\n\n\n")
+logging.info("\n\n\n\n Mix CNN \n\n\n\n")
 
 
 for patient in np.unique(Patient_id):
@@ -201,8 +205,8 @@ for patient in np.unique(Patient_id):
         Result.append(res)
     sio.savemat("Res_Mix_Patient"+str(patient)+".mat", {"res":Result})
     Result = np.mean(Result, axis=0)
-    print ('-'*100)
-    print('\nBegin Training for Patient '+str(patient))
-    print('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
+    logging.info('-'*100)
+    logging.info('\nBegin Training for Patient '+str(patient))
+    logging.info('End Training with \t loss: %.3f\tAccuracy : %.3f\t\tval-loss: %.3f\tval-Accuracy : %.3f' %
           (Result[0], Result[1], Result[2], Result[3]))
-    print('\n'+'-'*100)
+    logging.info('\n'+'-'*100)
